@@ -35,5 +35,18 @@ namespace PetCareDB
                 }
             }
         }
+
+        public static void RemoveUser(int user_id)
+        {
+            using (PetCareEntities context = new PetCareEntities())
+            {
+                User user_to_delete = context.Users.Find(user_id);
+                if (user_to_delete != null)
+                {
+                    context.Users.Remove(user_to_delete);
+                    context.SaveChanges();
+                }
+            }
+        }
     }
 }

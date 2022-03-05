@@ -14,7 +14,9 @@ namespace PetCareDB
     {
         static void Main(string[] args)
         {
-
+            //int k = PetCareMethods.AddNewUser("Анастасия", "Усова", "XXX.ru", "t1t1", "Советский", false);
+            //WriteLine(k);
+            //ReadLine();
             /*
             const string ip = "127.0.0.1";
             const int port = 8080;
