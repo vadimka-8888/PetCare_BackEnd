@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PetCareMethods.cs" />
     <Compile Include="EF\Article.cs" />
     <Compile Include="EF\Illness.cs" />
     <Compile Include="EF\Mention.cs" />
