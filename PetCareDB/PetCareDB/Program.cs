@@ -15,6 +15,7 @@ namespace PetCareDB
     {
         static void Main(string[] args)
         {
+            /*
             string mes = PetCareMethods.RegisterUser("Валерия", "Мороз", "YYY.ru", "fff", "Советский", false);
             WriteLine(mes);
             Regex r = new Regex(@"\d+");
@@ -23,7 +24,8 @@ namespace PetCareDB
             mes = PetCareMethods.RegisterPet(1002, "Ёж", "Куки", null, d, "M", 3, "Серый", null);
             WriteLine(mes);
             ReadLine();
-            /*
+            */
+            
             const string ip = "127.0.0.1";
             const int port = 8080;
 
@@ -55,7 +57,7 @@ namespace PetCareDB
                 listener.Shutdown(SocketShutdown.Both);
                 listener.Close();
             }
-            */
+            
         }
     }
 }
