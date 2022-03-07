@@ -82,5 +82,71 @@ namespace PetCareDB
             }
         }
 
+        public static string RegisterPet(int user_id, string animal, string name, string breed, DateTime date_of_birth, string gender, float weight, string color, byte[] image)
+        {
+            using (PetCareEntities context = new PetCareEntities())
+            {
+                try
+                {
+                    if (ApproveId(user_id, "user"))
+                    {
+                        var pets = context.Pets.Where(p => p.Animal == animal && p.Name == name).Select(p => new { Name = p.Name });
+                        if (pets.Count() == 0)
+                        {
+                            var pet = new Pet
+                            {
+                                UserId = user_id,
+                                Animal = animal,
+                                Name = name,
+                                Breed = breed,
+                                DateOfBirth = date_of_birth,
+                                Gender = gender,
+                                Weight = weight,
+                                Color = color,
+                                Photo = image
+                            };
+                            context.Pets.Add(pet);
+                            context.SaveChanges();
+                            return $"Regp_s|{pet.PetId}";
+                        }
+                        else return "Regp_n|0|animal already exists";
+                    }
+                    else return "Regp_n|0|wrong user id";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.InnerException?.Message);
+                    return "Regp_n|0";
+                }
+            }
+        }
+
+        public static string EnterPetProfile()
+        {
+            return "";
+        }
+
+        private static bool ApproveId(int id, string kind)
+        {
+            using (PetCareEntities context = new PetCareEntities())
+            {
+                bool res = false;
+                if (id > 0)
+                {
+                    switch (kind)
+                    {
+                        case "user":
+                            res = context.Users.Any(u => u.UserId == id);
+                            break;
+                        case "pet":
+                            res = context.Pets.Any(p => p.PetId == id);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                return res;
+            }
+        }
     }
 }

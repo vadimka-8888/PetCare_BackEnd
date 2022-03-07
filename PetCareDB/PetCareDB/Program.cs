@@ -7,6 +7,7 @@ using PetCareDB.EF;
 using static System.Console;
 using System.Net;
 using System.Net.Sockets;
+using System.Text.RegularExpressions;
 
 namespace PetCareDB
 {
@@ -14,7 +15,12 @@ namespace PetCareDB
     {
         static void Main(string[] args)
         {
-            string mes = PetCareMethods.RegisterUser("Анастасия", "Усова", "XXX.ru", "t1t1", "Советский", false);
+            string mes = PetCareMethods.RegisterUser("Валерия", "Мороз", "YYY.ru", "fff", "Советский", false);
+            WriteLine(mes);
+            Regex r = new Regex(@"\d+");
+            int k = int.Parse(r.Match(mes).ToString());
+            DateTime d = DateTime.Parse("01.09.2021");
+            mes = PetCareMethods.RegisterPet(1002, "Ёж", "Куки", null, d, "M", 3, "Серый", null);
             WriteLine(mes);
             ReadLine();
             /*
