@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using PetCareDB.EF;
 using static System.Console;
@@ -18,6 +20,9 @@ namespace PetCareDB
             /*
             string mes = PetCareMethods.RegisterUser("Валерия", "Мороз", "YYY.ru", "fff", "Советский", false);
             WriteLine(mes);
+            */
+
+            /*
             Regex r = new Regex(@"\d+");
             int k = int.Parse(r.Match(mes).ToString());
             DateTime d = DateTime.Parse("01.09.2021");
@@ -50,14 +55,29 @@ namespace PetCareDB
                 }
                 while (listener.Available > 0);
 
-                WriteLine(data.ToString());
+                string query_to_base = data.ToString();
+                WriteLine("Recieved query is " + query_to_base);
                 WriteLine();
-                listener.Send(Encoding.UTF8.GetBytes("Всё успешно!"));
+                QueryInformation query = JsonSerializer.Deserialize<QueryInformation>(query_to_base);
+                string response = "";
+                
+                switch (query.action)
+                {
+                    case "reg_user":
+                        UserInformation u_inf = JsonSerializer.Deserialize<UserInformation>(query.data);
+                        response = PetCareMethods.RegisterUser(u_inf.fname, u_inf.lname, u_inf.email, u_inf.password, u_inf.district, u_inf.confirmation);
+                        break;
+                    default:
+                        break;
+                }
+
+                listener.Send(Encoding.UTF8.GetBytes(response));
 
                 listener.Shutdown(SocketShutdown.Both);
                 listener.Close();
             }
             
+
         }
     }
 }
