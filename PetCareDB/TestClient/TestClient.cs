@@ -6,6 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace TestClient
 {
@@ -22,7 +23,8 @@ namespace TestClient
             {
                 var tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 Console.ReadLine();
-                PetCareDB.UserInformation u_inf = new PetCareDB.UserInformation
+                PetCareDB.UserInformation 
+                    u_inf = new PetCareDB.UserInformation
                 {
                     fname = "Екатерина",
                     lname = "Доц",
@@ -32,6 +34,7 @@ namespace TestClient
                     confirmation = false
                 };
                 string message_basic = JsonSerializer.Serialize(u_inf);
+                Console.WriteLine("temporary message " + message_basic);
                 PetCareDB.QueryInformation query = new PetCareDB.QueryInformation
                 {
                     action = "reg_user",
