@@ -23,8 +23,7 @@ namespace TestClient
             {
                 var tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 Console.ReadLine();
-                PetCareDB.UserInformation 
-                    u_inf = new PetCareDB.UserInformation
+                PetCareDB.UserInformation u_inf = new PetCareDB.UserInformation
                 {
                     fname = "Екатерина",
                     lname = "Доц",

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PetCareDB.EF;
+using System.Text.Json;
 
 namespace PetCareDB
 {
@@ -29,14 +30,14 @@ namespace PetCareDB
                         };
                         context.Users.Add(user);
                         context.SaveChanges();
-                        return $"Reg_successful|{user.UserId}";
+                        return $"Reg_u_successful|{user.UserId}";
                     }
-                    else return "Reg_notsuccessful|0|user already exists";
+                    else return "Reg_u_notsuccessful|0|user already exists";
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.InnerException?.Message);
-                    return "Reg_notsuccessful|0";
+                    return "Reg_u_notsuccessful|0";
                 }
             }
         }
@@ -47,21 +48,52 @@ namespace PetCareDB
             {
                 try
                 {
+                    List<string> Result = new List<string>();
                     User user = context.Users.First(u => u.Email == email && u.Password == password);
-                    context.Entry(user).Collection(c => c.Pets).Load();
-                    string result = $"Ent_s|UI|{user.FirstName}|{user.LastName}|{user.District}|";
-                    int n = 1;
-                    foreach (Pet pet in context.Pets)
+                    //context.Entry(user).Collection(c => c.Pets).Load();
+                    UserInformation u_inf = new UserInformation
                     {
-                        result += $"PI{n}|{pet.Animal}|{pet.Name}|{pet.Photo}|{pet.Gender}|{pet.Color}|{pet.DateOfBirth}|{pet.Breed}|{pet.Weight}|";
-                        n++;
+                        fname = user.FirstName,
+                        lname = user.LastName,
+                        email = null,
+                        password = null,
+                        district = user.District,
+                        confirmation = user.ReadyForOvereposure
+                    };
+
+                    Result.Add(JsonSerializer.Serialize(u_inf));
+                    foreach (Pet pet in user.Pets)
+                    {
+                        PetInformation p_inf = new PetInformation
+                        {
+                            animal = pet.Animal,
+                            name = pet.Name,
+                            date_of_birth = pet.DateOfBirth,
+                            gender = pet.Gender,
+                            weight = pet.Weight,
+                            color = pet.Color,
+                            photo = pet.Photo
+                        };
+
+                        Result.Add(JsonSerializer.Serialize(p_inf));
                     }
-                    return result;
+
+                    SendQuery query = new SendQuery
+                    {
+                        result = "Ent_p_successful",
+                        data = Result
+                    };
+                    return JsonSerializer.Serialize(query);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.InnerException?.Message);
-                    return "Ent_n|0";
+                    SendQuery query = new SendQuery
+                    {
+                        result = "Ent_p_notsuccessful",
+                        data = null
+                    };
+                    return JsonSerializer.Serialize(query);
                 }
 
             }
@@ -107,16 +139,16 @@ namespace PetCareDB
                             };
                             context.Pets.Add(pet);
                             context.SaveChanges();
-                            return $"Regp_s|{pet.PetId}";
+                            return $"Reg_p_successful|{pet.PetId}";
                         }
-                        else return "Regp_n|0|animal already exists";
+                        else return "Reg_p_notsuccessful|0|animal already exists";
                     }
-                    else return "Regp_n|0|wrong user id";
+                    else return "Reg_p_notsuccessful|0|wrong user id";
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.InnerException?.Message);
-                    return "Regp_n|0";
+                    return "Reg_p_notsuccessful|0";
                 }
             }
         }

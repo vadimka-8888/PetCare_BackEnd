@@ -30,7 +30,20 @@ namespace PetCareDB
             WriteLine(mes);
             ReadLine();
             */
-            
+
+            DateTime d = DateTime.Parse("05.03.2018");
+            string mes = PetCareMethods.RegisterPet(2002, "Кот/Кошка", "Рита", null, d, "W", 3, "Чёрный", null);
+            WriteLine(mes);
+
+            mes = PetCareMethods.EnterUserProfile("YYY.ru", "fff");
+            WriteLine(mes);
+
+
+            ReadLine();
+
+
+
+            /*
             const string ip = "127.0.0.1";
             const int port = 8080;
 
@@ -67,6 +80,9 @@ namespace PetCareDB
                         UserInformation u_inf = JsonSerializer.Deserialize<UserInformation>(query.data);
                         response = PetCareMethods.RegisterUser(u_inf.fname, u_inf.lname, u_inf.email, u_inf.password, u_inf.district, u_inf.confirmation);
                         break;
+                    case "ent_user":
+                        response = "";
+                        break;
                     default:
                         break;
                 }
@@ -76,6 +92,7 @@ namespace PetCareDB
                 listener.Shutdown(SocketShutdown.Both);
                 listener.Close();
             }
+            */
             
 
         }
