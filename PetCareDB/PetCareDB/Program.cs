@@ -34,6 +34,12 @@ namespace PetCareDB
             DateTime d = DateTime.Parse("05.03.2018");
             string mes = PetCareMethods.RegisterPet(2002, "Кот/Кошка", "Рита", null, d, "W", 3, "Чёрный", null);
             WriteLine(mes);
+            mes = PetCareMethods.RegisterIllness(3, "Простуда", DateTime.Parse("12.05.2020"), DateTime.Parse("17.05.2020"));
+            WriteLine(mes);
+            mes = PetCareMethods.RegisterMention(2002, "Покормить Риту", DateTime.Parse("16.02.2022"), TimeSpan.Parse("17:00:00"));
+            WriteLine(mes);
+            mes = PetCareMethods.RegisterNote(2002, "Купить когтеточку для Риты", DateTime.Parse("12.03.2022"));
+            WriteLine(mes);
 
             mes = PetCareMethods.EnterUserProfile("YYY.ru", "fff");
             WriteLine(mes);

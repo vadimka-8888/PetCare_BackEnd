@@ -74,8 +74,38 @@ namespace PetCareDB
                             color = pet.Color,
                             photo = pet.Photo
                         };
-
                         Result.Add(JsonSerializer.Serialize(p_inf));
+
+                        foreach (Illness illness in pet.Illnesses)
+                        {
+                            IllnessInformation i_inf = new IllnessInformation
+                            {
+                                type = illness.Type,
+                                date_of_begining = illness.DateOfBegining,
+                                date_of_ending = illness.DateOfEnding
+                            };
+                            Result.Add(JsonSerializer.Serialize(i_inf));
+                        }
+                    }
+
+                    foreach (Note n in user.Notes)
+                    {
+                        NoteInformation n_inf = new NoteInformation
+                        {
+                            date = n.Date,
+                            n_text = n.TextOfNote
+                        };
+                        Result.Add(JsonSerializer.Serialize(n_inf));
+                    }
+
+                    foreach (Mention m in user.Mentions)
+                    {
+                        MentionInformation m_inf = new MentionInformation
+                        {
+                            date = m.Date,
+                            m_text = m.TextOfMention
+                        };
+                        Result.Add(JsonSerializer.Serialize(m_inf));
                     }
 
                     SendQuery query = new SendQuery
@@ -114,6 +144,7 @@ namespace PetCareDB
             }
         }
 
+        //addition of new data
         public static string RegisterPet(int user_id, string animal, string name, string breed, DateTime date_of_birth, string gender, float weight, string color, byte[] image)
         {
             using (PetCareEntities context = new PetCareEntities())
@@ -153,6 +184,107 @@ namespace PetCareDB
             }
         }
 
+        public static string RegisterIllness(int pet_id, string type, DateTime date_of_begining, DateTime date_of_ending)
+        {
+            using (PetCareEntities context = new PetCareEntities())
+            {
+                try
+                {
+                    if (ApproveId(pet_id, "pet"))
+                    {
+                        var illnesses = context.Illnesses.Where(i => i.Type == type && i.DateOfBegining == date_of_begining && i.DateOfEnding == date_of_ending).Select(i => new { Type = i.Type });
+                        if (illnesses.Count() == 0)
+                        {
+                            var illness = new Illness
+                            {
+                                PetId = pet_id,
+                                Type = type,
+                                DateOfBegining = date_of_begining,
+                                DateOfEnding = date_of_ending
+                            };
+                            context.Illnesses.Add(illness);
+                            context.SaveChanges();
+                            return $"Reg_i_successful|{illness.IllnessId}";
+                        }
+                        else return "Reg_i_notsuccessful|0|illness already exists";
+                    }
+                    else return "Reg_i_notsuccessful|0|wrong pet id";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.InnerException?.Message);
+                    return "Reg_i_notsuccessful|0";
+                }
+            }
+        }
+
+        public static string RegisterNote(int user_id, string text, DateTime date)
+        {
+            using (PetCareEntities context = new PetCareEntities())
+            {
+                try
+                {
+                    if (ApproveId(user_id, "user"))
+                    {
+                        var notes = context.Notes.Where(n => n.TextOfNote == text && n.Date == date).Select(n => new { TextOfNote = n.TextOfNote });
+                        if (notes.Count() == 0)
+                        {
+                            var note = new Note
+                            {
+                                UserId = user_id,
+                                TextOfNote = text,
+                                Date = date
+                            };
+                            context.Notes.Add(note);
+                            context.SaveChanges();
+                            return $"Reg_n_successful|{note.NoteId}";
+                        }
+                        else return "Reg_n_notsuccessful|0|note already exists";
+                    }
+                    else return "Reg_n_notsuccessful|0|wrong user id";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.InnerException?.Message);
+                    return "Reg_n_notsuccessful|0";
+                }
+            }
+        }
+
+        public static string RegisterMention(int user_id, string text, DateTime date, TimeSpan time)
+        {
+            using (PetCareEntities context = new PetCareEntities())
+            {
+                try
+                {
+                    if (ApproveId(user_id, "user"))
+                    {
+                        var mentions = context.Mentions.Where(m => m.TextOfMention == text && m.Date == date && m.Time == time).Select(m => new { TextOfMention = m.TextOfMention });
+                        if (mentions.Count() == 0)
+                        {
+                            var mention = new Mention
+                            {
+                                UserId = user_id,
+                                TextOfMention = text,
+                                Date = date,
+                                Time = time
+                            };
+                            context.Mentions.Add(mention);
+                            context.SaveChanges();
+                            return $"Reg_m_successful|{mention.MentionId}";
+                        }
+                        else return "Reg_m_notsuccessful|0|mention already exists";
+                    }
+                    else return "Reg_m_notsuccessful|0|wrong user id";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.InnerException?.Message);
+                    return "Reg_m_notsuccessful|0";
+                }
+            }
+        }
+
         public static string EnterPetProfile()
         {
             return "";
@@ -172,6 +304,18 @@ namespace PetCareDB
                             break;
                         case "pet":
                             res = context.Pets.Any(p => p.PetId == id);
+                            break;
+                        case "illness":
+                            res = context.Illnesses.Any(i => i.IllnessId == id);
+                            break;
+                        case "note":
+                            res = context.Notes.Any(n => n.NoteId == id);
+                            break;
+                        case "overexposure":
+                            res = context.Overexposures.Any(o => o.OverexposureId == id);
+                            break;
+                        case "mention":
+                            res = context.Mentions.Any(m => m.MentionId == id);
                             break;
                         default:
                             break;
