@@ -30,7 +30,7 @@ namespace PetCareDB
             WriteLine(mes);
             ReadLine();
             */
-
+            /*
             DateTime d = DateTime.Parse("05.03.2018");
             string mes = PetCareMethods.RegisterPet(2002, "Кот/Кошка", "Рита", null, d, "W", 3, "Чёрный", null);
             WriteLine(mes);
@@ -40,16 +40,21 @@ namespace PetCareDB
             WriteLine(mes);
             mes = PetCareMethods.RegisterNote(2002, "Купить когтеточку для Риты", DateTime.Parse("12.03.2022"));
             WriteLine(mes);
-
-            mes = PetCareMethods.EnterUserProfile("YYY.ru", "fff");
-            WriteLine(mes);
-
-
-            ReadLine();
-
-
+            */
 
             /*
+            string mes = PetCareMethods.EnterUserProfile("YYY.ru", "fff");
+            //Console.OutputEncoding = Encoding.Unicode;
+
+            SendQuery qqq = JsonSerializer.Deserialize<SendQuery>(mes);
+            WriteLine(qqq.result);
+            foreach (var x in qqq.data)
+                WriteLine(x);
+
+            ReadLine();
+            */
+
+
             const string ip = "127.0.0.1";
             const int port = 8080;
 
@@ -87,7 +92,8 @@ namespace PetCareDB
                         response = PetCareMethods.RegisterUser(u_inf.fname, u_inf.lname, u_inf.email, u_inf.password, u_inf.district, u_inf.confirmation);
                         break;
                     case "ent_user":
-                        response = "";
+                        EmailPassword ep_inf = JsonSerializer.Deserialize<EmailPassword>(query.data);
+                        response = PetCareMethods.EnterUserProfile(ep_inf.email, ep_inf.password);
                         break;
                     default:
                         break;
@@ -98,7 +104,6 @@ namespace PetCareDB
                 listener.Shutdown(SocketShutdown.Both);
                 listener.Close();
             }
-            */
             
 
         }

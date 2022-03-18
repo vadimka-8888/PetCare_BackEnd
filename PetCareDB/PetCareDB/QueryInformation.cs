@@ -6,20 +6,33 @@ using System.Threading.Tasks;
 
 namespace PetCareDB
 {
-    public class QueryInformation
+    public class QueryInformation //for receiving information from client
     {
         public string action { get; set; }
         public string data { get; set; }
     }
 
-    public class SendQuery
+    public class SendQuery //for sending information to client
     {
         public string result { get; set; }
         public List<string> data { get; set; }
     }
 
+    public class UpdateField
+    {
+        public int id { get; set; }
+        public string inf_for_update { get; set; }
+    }
+
+    public class EmailPassword
+    {
+        public string email { get; set; }
+        public string password { get; set; }
+    }
+
     public class UserInformation
     {
+        public int user_id { get; set; }
         public string fname { get; set; }
         public string lname { get; set; }
         public string email { get; set; }
@@ -56,15 +69,15 @@ namespace PetCareDB
     {
         public string animal { get; set; }
         public string o_note { get; set; }
-        public int cost { get; set; }
+        public int? cost { get; set; }
     }
 
     public class VaccinationInformation
     {
         public string type { get; set; }
-        public DateTime date { get; set; }
+        public DateTime? date { get; set; }
         public byte[] official_doc { get; set; }
-        public bool revaccination { get; set; }
+        public bool? revaccination { get; set; }
     }
 
     public class IllnessInformation
@@ -72,5 +85,15 @@ namespace PetCareDB
         public string type { get; set; }
         public DateTime date_of_begining { get; set; }
         public DateTime date_of_ending { get; set; }
+    }
+
+    public class OfferInformation
+    {
+        public string fname { get; set; }
+        public string district { get; set; }
+        public string email { get; set; }
+        public string animal { get; set; }
+        public string o_note { get; set; }
+        public int? cost { get; set; }
     }
 }

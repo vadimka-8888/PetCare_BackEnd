@@ -5,54 +5,31 @@ using System.Text;
 using System.Threading.Tasks;
 using PetCareDB.EF;
 using System.Text.Json;
+using System.Text.Encodings.Web;
+using System.Text.Unicode;
 
 namespace PetCareDB
 {
     public static class PetCareMethods
     {
-        public static string RegisterUser(string fname, string lname, string email, string password, string district, bool confirmation)
-        {
-            using (PetCareEntities context = new PetCareEntities())
-            {
-                try
-                {
-                    var users = context.Users.Where(u => u.Email == email).Select(u => new {Email = u.Email});
-                    if (users.Count() == 0) //checking existance of the user
-                    {
-                        var user = new User
-                        {
-                            FirstName = fname,
-                            LastName = lname,
-                            Email = email,
-                            Password = password,
-                            District = district,
-                            ReadyForOvereposure = confirmation
-                        };
-                        context.Users.Add(user);
-                        context.SaveChanges();
-                        return $"Reg_u_successful|{user.UserId}";
-                    }
-                    else return "Reg_u_notsuccessful|0|user already exists";
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.InnerException?.Message);
-                    return "Reg_u_notsuccessful|0";
-                }
-            }
-        }
-
+        // enter user profile (send all information, besides the articles)
         public static string EnterUserProfile(string email, string password)
         {
+            JsonSerializerOptions options = new JsonSerializerOptions
+            {
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.BasicLatin, UnicodeRanges.Cyrillic)
+            };
             using (PetCareEntities context = new PetCareEntities())
             {
                 try
                 {
                     List<string> Result = new List<string>();
+                    List<Overexposure> Offers = new List<Overexposure>(); //future offers
                     User user = context.Users.First(u => u.Email == email && u.Password == password);
                     //context.Entry(user).Collection(c => c.Pets).Load();
                     UserInformation u_inf = new UserInformation
                     {
+                        user_id = user.UserId,
                         fname = user.FirstName,
                         lname = user.LastName,
                         email = null,
@@ -61,7 +38,7 @@ namespace PetCareDB
                         confirmation = user.ReadyForOvereposure
                     };
 
-                    Result.Add(JsonSerializer.Serialize(u_inf));
+                    Result.Add(JsonSerializer.Serialize(u_inf, options));
                     foreach (Pet pet in user.Pets)
                     {
                         PetInformation p_inf = new PetInformation
@@ -74,7 +51,7 @@ namespace PetCareDB
                             color = pet.Color,
                             photo = pet.Photo
                         };
-                        Result.Add(JsonSerializer.Serialize(p_inf));
+                        Result.Add(JsonSerializer.Serialize(p_inf, options));
 
                         foreach (Illness illness in pet.Illnesses)
                         {
@@ -84,7 +61,27 @@ namespace PetCareDB
                                 date_of_begining = illness.DateOfBegining,
                                 date_of_ending = illness.DateOfEnding
                             };
-                            Result.Add(JsonSerializer.Serialize(i_inf));
+                            Result.Add(JsonSerializer.Serialize(i_inf, options));
+                        }
+
+                        foreach (Vaccination vaccination in pet.Vaccinations)
+                        {
+                            VaccinationInformation v_inf = new VaccinationInformation
+                            {
+                                type = vaccination.Type,
+                                revaccination = vaccination.NecessityOfRevaccination,
+                                official_doc = vaccination.OfficialDocument,
+                                date = vaccination.Date
+                            };
+                            Result.Add(JsonSerializer.Serialize(v_inf, options));
+                        }
+
+                        //forming offers of overexposure
+                        var PeopleOffer = context.Users.Where(x => x.ReadyForOvereposure == true).Select(x => x.UserId);
+                        foreach (int id in PeopleOffer)
+                        {
+                            var Offers_of_certain_person = context.Overexposures.Where(x => x.UserId == id && x.Animal == pet.Animal);
+                            Offers.AddRange(Offers_of_certain_person);
                         }
                     }
 
@@ -106,6 +103,29 @@ namespace PetCareDB
                             m_text = m.TextOfMention
                         };
                         Result.Add(JsonSerializer.Serialize(m_inf));
+                    }
+
+                    foreach (Overexposure o in user.Overexposures)
+                    {
+                        OverexposureInformation o_inf = new OverexposureInformation
+                        {
+                            animal = o.Animal,
+                            o_note = o.ONote,
+                            cost = o.Cost
+                        };
+                        Result.Add(JsonSerializer.Serialize(o_inf));
+                    }
+
+                    //offers
+                    foreach (Overexposure of in Offers)
+                    {
+                        OfferInformation of_inf = new OfferInformation
+                        {
+                            animal = of.Animal,
+                            o_note = of.ONote,
+                            cost = of.Cost
+                        };
+                        Result.Add(JsonSerializer.Serialize(of_inf));
                     }
 
                     SendQuery query = new SendQuery
@@ -145,6 +165,38 @@ namespace PetCareDB
         }
 
         //addition of new data
+        public static string RegisterUser(string fname, string lname, string email, string password, string district, bool confirmation)
+        {
+            using (PetCareEntities context = new PetCareEntities())
+            {
+                try
+                {
+                    var users = context.Users.Where(u => u.Email == email).Select(u => new { Email = u.Email });
+                    if (users.Count() == 0) //checking existance of the user
+                    {
+                        var user = new User
+                        {
+                            FirstName = fname,
+                            LastName = lname,
+                            Email = email,
+                            Password = password,
+                            District = district,
+                            ReadyForOvereposure = confirmation
+                        };
+                        context.Users.Add(user);
+                        context.SaveChanges();
+                        return $"Reg_u_successful|{user.UserId}";
+                    }
+                    else return "Reg_u_notsuccessful|0|user already exists";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.InnerException?.Message);
+                    return "Reg_u_notsuccessful|0";
+                }
+            }
+        }
+
         public static string RegisterPet(int user_id, string animal, string name, string breed, DateTime date_of_birth, string gender, float weight, string color, byte[] image)
         {
             using (PetCareEntities context = new PetCareEntities())
@@ -285,11 +337,134 @@ namespace PetCareDB
             }
         }
 
-        public static string EnterPetProfile()
+        public static string RegisterOverexposure(int user_id, string animal, string overexposure_note, int cost)
         {
-            return "";
+            using (PetCareEntities context = new PetCareEntities())
+            {
+                try
+                {
+                    if (ApproveId(user_id, "user"))
+                    {
+                        var mentions = context.Overexposures.Where(o => o.Animal == animal && o.Cost == cost && o.ONote == overexposure_note).Select(o => new { Animal = o.Animal});
+                        if (mentions.Count() == 0)
+                        {
+                            var overexposure = new Overexposure
+                            {
+                                UserId = user_id,
+                                Animal = animal,
+                                ONote = overexposure_note,
+                                Cost = cost
+                            };
+                            context.Overexposures.Add(overexposure);
+                            context.SaveChanges();
+                            return $"Reg_o_successful|{overexposure.OverexposureId}";
+                        }
+                        else return "Reg_o_notsuccessful|0|overexposure already exists";
+                    }
+                    else return "Reg_o_notsuccessful|0|wrong user id";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.InnerException?.Message);
+                    return "Reg_m_notsuccessful|0";
+                }
+            }
         }
 
+        //update of information
+        public static string UpdateEmail(int user_id, string new_email)
+        {
+            using (PetCareEntities context = new PetCareEntities())
+            {
+                try
+                {
+                    if (ApproveId(user_id, "user"))
+                    {
+                        User user = context.Users.Find(user_id);
+                        user.Email = new_email;
+                        context.SaveChanges();
+                        return "Upd_e_successful";
+                    }
+                    else return "Upd_e_notsuccessful|0|wrong user id";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.InnerException?.Message);
+                    return "Upd_e_notsuccessful|0";
+                }
+            }
+        }
+
+        public static string UpdateDistrict(int user_id, string new_district)
+        {
+            using (PetCareEntities context = new PetCareEntities())
+            {
+                try
+                {
+                    if (ApproveId(user_id, "user"))
+                    {
+                        User user = context.Users.Find(user_id);
+                        user.District = new_district;
+                        context.SaveChanges();
+                        return "Upd_e_successful";
+                    }
+                    else return "Upd_e_notsuccessful|0|wrong user id";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.InnerException?.Message);
+                    return "Upd_e_notsuccessful|0";
+                }
+            }
+        }
+
+        public static string UpdateOverexposure_Note(int overex_id, string new_note)
+        {
+            using (PetCareEntities context = new PetCareEntities())
+            {
+                try
+                {
+                    if (ApproveId(overex_id, "overexposure"))
+                    {
+                        Overexposure overexposure = context.Overexposures.Find(overex_id);
+                        overexposure.ONote = new_note;
+                        context.SaveChanges();
+                        return "Upd_on_successful";
+                    }
+                    else return "Upd_on_notsuccessful|0|wrong user id";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.InnerException?.Message);
+                    return "Upd_on_notsuccessful|0";
+                }
+            }
+        }
+
+        public static string UpdateOverexposure_cost(int overex_id, int new_cost)
+        {
+            using (PetCareEntities context = new PetCareEntities())
+            {
+                try
+                {
+                    if (ApproveId(overex_id, "overexposure"))
+                    {
+                        Overexposure overexposure = context.Overexposures.Find(overex_id);
+                        overexposure.Cost = new_cost;
+                        context.SaveChanges();
+                        return "Upd_oc_successful";
+                    }
+                    else return "Upd_oc_notsuccessful|0|wrong user id";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.InnerException?.Message);
+                    return "Upd_oc_notsuccessful|0";
+                }
+            }
+        }
+
+        //approve the certain id
         private static bool ApproveId(int id, string kind)
         {
             using (PetCareEntities context = new PetCareEntities())
