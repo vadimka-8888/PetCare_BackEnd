@@ -84,7 +84,7 @@ namespace PetCareDB
                 WriteLine();
                 QueryInformation query = JsonSerializer.Deserialize<QueryInformation>(query_to_base);
                 string response = "";
-                
+
                 switch (query.action)
                 {
                     case "reg_user":
@@ -95,6 +95,26 @@ namespace PetCareDB
                         EmailPassword ep_inf = JsonSerializer.Deserialize<EmailPassword>(query.data);
                         response = PetCareMethods.EnterUserProfile(ep_inf.email, ep_inf.password);
                         break;
+                    case "reg_animal":
+                        PetInformation p_inf = JsonSerializer.Deserialize<PetInformation>(query.data);
+                        response = PetCareMethods.RegisterPet(p_inf.user_id, p_inf.animal, p_inf.name, p_inf.breed, p_inf.date_of_birth, p_inf.gender, p_inf.weight, p_inf.color, p_inf.photo);
+                        break;
+                    case "reg_note":
+                        NoteInformation n_inf = JsonSerializer.Deserialize<NoteInformation>(query.data);
+                        response = PetCareMethods.RegisterNote(n_inf.user_id, n_inf.n_text, n_inf.date);
+                        break;
+                    case "reg_overexposure":
+                        OverexposureInformation o_inf = JsonSerializer.Deserialize<OverexposureInformation>(query.data);
+                        response = PetCareMethods.RegisterOverexposure(o_inf.user_id, o_inf.animal, o_inf.o_note, o_inf.cost);
+                        break;
+                    case "upd_user_email":
+                        UpdateField f1_inf = JsonSerializer.Deserialize<UpdateField>(query.data);
+                        response = PetCareMethods.UpdateEmail(f1_inf.id, f1_inf.inf_for_update);
+                        break;
+                    case "upd_user_district":
+                        UpdateField f2_inf = JsonSerializer.Deserialize<UpdateField>(query.data);
+                        response = PetCareMethods.UpdateDistrict(f2_inf.id, f2_inf.inf_for_update);
+                        break;
                     default:
                         break;
                 }
@@ -104,7 +124,7 @@ namespace PetCareDB
                 listener.Shutdown(SocketShutdown.Both);
                 listener.Close();
             }
-            
+
 
         }
     }

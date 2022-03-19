@@ -43,8 +43,10 @@ namespace PetCareDB
 
     public class PetInformation
     {
+        public int user_id { get; set; }
         public string animal { get; set; }
         public string name { get; set; }
+        public string breed { get; set; }
         public DateTime? date_of_birth { get; set; }
         public string gender { get; set; }
         public float? weight { get; set; }
@@ -61,12 +63,14 @@ namespace PetCareDB
 
     public class NoteInformation
     {
+        public int user_id { get; set; }
         public string n_text { get; set; }
         public DateTime date { get; set; }
     }
 
     public class OverexposureInformation
     {
+        public int user_id { get; set; }
         public string animal { get; set; }
         public string o_note { get; set; }
         public int? cost { get; set; }

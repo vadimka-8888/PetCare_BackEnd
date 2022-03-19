@@ -197,7 +197,7 @@ namespace PetCareDB
             }
         }
 
-        public static string RegisterPet(int user_id, string animal, string name, string breed, DateTime date_of_birth, string gender, float weight, string color, byte[] image)
+        public static string RegisterPet(int user_id, string animal, string name, string breed, DateTime? date_of_birth, string gender, float? weight, string color, byte[] image)
         {
             using (PetCareEntities context = new PetCareEntities())
             {
@@ -337,7 +337,7 @@ namespace PetCareDB
             }
         }
 
-        public static string RegisterOverexposure(int user_id, string animal, string overexposure_note, int cost)
+        public static string RegisterOverexposure(int user_id, string animal, string overexposure_note, int? cost)
         {
             using (PetCareEntities context = new PetCareEntities())
             {
@@ -431,7 +431,7 @@ namespace PetCareDB
                         context.SaveChanges();
                         return "Upd_on_successful";
                     }
-                    else return "Upd_on_notsuccessful|0|wrong user id";
+                    else return "Upd_on_notsuccessful|0|wrong overexposure id";
                 }
                 catch (Exception ex)
                 {
@@ -454,12 +454,62 @@ namespace PetCareDB
                         context.SaveChanges();
                         return "Upd_oc_successful";
                     }
-                    else return "Upd_oc_notsuccessful|0|wrong user id";
+                    else return "Upd_oc_notsuccessful|0|wrong overexposure id";
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.InnerException?.Message);
                     return "Upd_oc_notsuccessful|0";
+                }
+            }
+        }
+
+        //update information about offers of overexposures
+        private static string UpdateOverexposureDataList(int user_id)
+        {
+            using (PetCareEntities context = new PetCareEntities())
+            {
+                try
+                {
+                    List<string> result = new List<string>();
+                    List<Overexposure> Offers = new List<Overexposure>();
+                    if (ApproveId(user_id, "user"))
+                    {
+                        User user = context.Users.Find(user_id);
+                        foreach (Pet pet in user.Pets)
+                        {
+                            var PeopleOffer = context.Users.Where(x => x.ReadyForOvereposure == true).Select(x => x.UserId);
+                            foreach (int id in PeopleOffer)
+                            {
+                                var Offers_of_certain_person = context.Overexposures.Where(x => x.UserId == id && x.Animal == pet.Animal);
+                                Offers.AddRange(Offers_of_certain_person);
+                            }
+                        }
+
+                        foreach (Overexposure of in Offers)
+                        {
+                            OfferInformation of_inf = new OfferInformation
+                            {
+                                animal = of.Animal,
+                                o_note = of.ONote,
+                                cost = of.Cost
+                            };
+                            result.Add(JsonSerializer.Serialize(of_inf));
+                        }
+
+                        SendQuery query = new SendQuery
+                        {
+                            result = "Ent_p_successful",
+                            data = result
+                        };
+                        return JsonSerializer.Serialize(query);
+                    }
+                    else return "Upd_ao_notsuccessful|0|wrong user id";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.InnerException?.Message);
+                    return "Upd_ao_notsuccessful|0";
                 }
             }
         }
