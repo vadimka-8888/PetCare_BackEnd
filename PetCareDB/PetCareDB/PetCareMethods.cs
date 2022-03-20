@@ -77,7 +77,7 @@ namespace PetCareDB
                         }
 
                         //forming offers of overexposure
-                        var PeopleOffer = context.Users.Where(x => x.ReadyForOvereposure == true).Select(x => x.UserId);
+                        var PeopleOffer = context.Users.Where(x => x.ReadyForOvereposure == true && x.UserId != user.UserId).Select(x => x.UserId);
                         foreach (int id in PeopleOffer)
                         {
                             var Offers_of_certain_person = context.Overexposures.Where(x => x.UserId == id && x.Animal == pet.Animal);
@@ -464,8 +464,31 @@ namespace PetCareDB
             }
         }
 
+        public static string UpdateOverexposureState(int user_id, bool new_state)
+        {
+            using (PetCareEntities context = new PetCareEntities())
+            {
+                try
+                {
+                    if (ApproveId(user_id, "user"))
+                    {
+                        User user = context.Users.Find(user_id);
+                        user.ReadyForOvereposure = new_state;
+                        context.SaveChanges();
+                        return "Upd_s_successful";
+                    }
+                    else return "Upd_s_notsuccessful|0|wrong user id";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.InnerException?.Message);
+                    return "Upd_s_notsuccessful|0";
+                }
+            }
+        }
+
         //update information about offers of overexposures
-        private static string UpdateOverexposureDataList(int user_id)
+        public static string UpdateOverexposureDataList(int user_id)
         {
             using (PetCareEntities context = new PetCareEntities())
             {
@@ -478,7 +501,7 @@ namespace PetCareDB
                         User user = context.Users.Find(user_id);
                         foreach (Pet pet in user.Pets)
                         {
-                            var PeopleOffer = context.Users.Where(x => x.ReadyForOvereposure == true).Select(x => x.UserId);
+                            var PeopleOffer = context.Users.Where(x => x.ReadyForOvereposure == true && x.UserId != user_id).Select(x => x.UserId);
                             foreach (int id in PeopleOffer)
                             {
                                 var Offers_of_certain_person = context.Overexposures.Where(x => x.UserId == id && x.Animal == pet.Animal);

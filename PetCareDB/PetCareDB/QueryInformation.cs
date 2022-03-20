@@ -18,10 +18,16 @@ namespace PetCareDB
         public List<string> data { get; set; }
     }
 
-    public class UpdateField
+    public class UpdateStringField
     {
         public int id { get; set; }
         public string inf_for_update { get; set; }
+    }
+
+    public class UpdateBoolField
+    {
+        public int id { get; set; }
+        public bool inf_for_update { get; set; }
     }
 
     public class EmailPassword

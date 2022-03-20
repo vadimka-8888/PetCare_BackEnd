@@ -52,9 +52,17 @@ namespace PetCareDB
                 WriteLine(x);
 
             ReadLine();
+            
+            string response;
+            string query_to_base = Test1();
+            QueryInformation query = JsonSerializer.Deserialize<QueryInformation>(query_to_base);
+            UserInformation u_inf = JsonSerializer.Deserialize<UserInformation>(query.data);
+            response = PetCareMethods.RegisterUser(u_inf.fname, u_inf.lname, u_inf.email, u_inf.password, u_inf.district, u_inf.confirmation);
+            WriteLine(response);
+            ReadLine();
             */
 
-
+            
             const string ip = "127.0.0.1";
             const int port = 8080;
 
@@ -108,24 +116,35 @@ namespace PetCareDB
                         response = PetCareMethods.RegisterOverexposure(o_inf.user_id, o_inf.animal, o_inf.o_note, o_inf.cost);
                         break;
                     case "upd_user_email":
-                        UpdateField f1_inf = JsonSerializer.Deserialize<UpdateField>(query.data);
+                        UpdateStringField f1_inf = JsonSerializer.Deserialize<UpdateStringField>(query.data);
                         response = PetCareMethods.UpdateEmail(f1_inf.id, f1_inf.inf_for_update);
                         break;
                     case "upd_user_district":
-                        UpdateField f2_inf = JsonSerializer.Deserialize<UpdateField>(query.data);
+                        UpdateStringField f2_inf = JsonSerializer.Deserialize<UpdateStringField>(query.data);
                         response = PetCareMethods.UpdateDistrict(f2_inf.id, f2_inf.inf_for_update);
+                        break;
+                    case "upd_over_list":
+                        int id = JsonSerializer.Deserialize<int>(query.data);
+                        response = PetCareMethods.UpdateOverexposureDataList(id);
+                        break;
+                    case "upd_user_state":
+                        UpdateBoolField f3_inf = JsonSerializer.Deserialize<UpdateBoolField>(query.data);
+                        response = PetCareMethods.UpdateOverexposureState(f3_inf.id, f3_inf.inf_for_update);
                         break;
                     default:
                         break;
                 }
 
+                SendQuery q = JsonSerializer.Deserialize<SendQuery>(response);
+                foreach (var x in q.data)
+                    WriteLine(x);
                 listener.Send(Encoding.UTF8.GetBytes(response));
 
                 listener.Shutdown(SocketShutdown.Both);
                 listener.Close();
             }
-
-
+            
         }
+
     }
 }
