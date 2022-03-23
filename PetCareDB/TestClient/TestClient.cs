@@ -24,7 +24,7 @@ namespace TestClient
                 var tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 Console.WriteLine("Press something to start tests");
                 Console.ReadLine();
-                Console.WriteLine("You are suggested to send differen applications. To choose press a b c d e f g h i j");
+                Console.WriteLine("You are suggested to send differen applications. To choose press a b c d e f g h i j k");
                 string test = Console.ReadLine();
 
                 string message = "NOTEST";
@@ -59,6 +59,9 @@ namespace TestClient
                         break;
                     case "j":
                         message = Test2();
+                        break;
+                    case "k":
+                        message = Test11();
                         break;
                     default:
                         break;
@@ -308,6 +311,27 @@ namespace TestClient
             PetCareDB.QueryInformation query = new PetCareDB.QueryInformation
             {
                 action = "upd_user_state",
+                data = message_basic
+            };
+            string mes = JsonSerializer.Serialize(query);
+            Console.WriteLine("Ready to send");
+            Console.WriteLine();
+            return mes;
+        }
+
+        static string Test11()
+        {
+            PetCareDB.EmailPassword ep = new PetCareDB.EmailPassword
+            {
+                email = "XXX.ru",
+                password = "t1t1"
+            };
+            string message_basic = JsonSerializer.Serialize(ep);
+            Console.WriteLine("temporary test-message 2" + message_basic);
+
+            PetCareDB.QueryInformation query = new PetCareDB.QueryInformation
+            {
+                action = "ent_user",
                 data = message_basic
             };
             string mes = JsonSerializer.Serialize(query);

@@ -121,6 +121,9 @@ namespace PetCareDB
                     {
                         OfferInformation of_inf = new OfferInformation
                         {
+                            fname = of.User.FirstName,
+                            district =of.User.District,
+                            email = of.User.Email,
                             animal = of.Animal,
                             o_note = of.ONote,
                             cost = of.Cost
@@ -513,6 +516,9 @@ namespace PetCareDB
                         {
                             OfferInformation of_inf = new OfferInformation
                             {
+                                fname = of.User.FirstName,
+                                district = of.User.District,
+                                email = of.User.Email,
                                 animal = of.Animal,
                                 o_note = of.ONote,
                                 cost = of.Cost
