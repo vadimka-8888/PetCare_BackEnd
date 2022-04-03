@@ -11,8 +11,8 @@ using PetCareBackEnd.DataForPost;
 
 namespace PetCareBackEnd.Controllers
 {
-    //[ApiController]
-    //[Route("api/[controller]")]
+    //Content-Type: application/json
+    //Conten-Encoding: charset=utf-8
     public class RegisterController : Controller//Base
     {
         private PetCareEntities context;
@@ -20,8 +20,6 @@ namespace PetCareBackEnd.Controllers
         {
             context = db;
         }
-        //Register/RegisterUser?fname=Дмитрий&lname=Махов&email=mahov@mail.ru&password=mmm222&district=Северный&confirmation=false
-        //{"fname":"Александра","lname":"Праведник","email":"ap@mail.ru","password":"sasha1","district":"Советский","confirmation":false}
         
         [HttpPost]
         public async Task<IActionResult> RegisterUser([FromBody] UserPost ep)
@@ -45,83 +43,65 @@ namespace PetCareBackEnd.Controllers
             else return BadRequest();//Json("Not successful");
         }
 
-        
-        
-        /*
-        // GET: RegisterController
-        public ActionResult Index()
-        {
-            return View();
-        }
-
-        // GET: RegisterController/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: RegisterController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: RegisterController/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> RegisterPet([FromBody] PetPost pet)
         {
-            try
+            if (ApproveId(pet.user_id, "user"))
             {
-                return RedirectToAction(nameof(Index));
+                var pets = context.Pets.Where(p => p.Animal == pet.animal && p.Name == pet.name).Select(p => new { Name = p.Name });
+                if (pets.Count() == 0)
+                {
+                    Pet pet0 = new Pet
+                    {
+                        UserId = pet.user_id,
+                        Animal = pet.animal,
+                        Name = pet.name,
+                        Breed = pet.breed,
+                        DateOfBirth = pet.date_of_birth,
+                        Gender = pet.gender,
+                        Weight = pet.weight,
+                        Color = pet.color,
+                        Photo = pet.photo
+                    };
+                    context.Pets.Add(pet0);
+                    await context.SaveChangesAsync();
+                    return Ok(pet0);
+                }
+                else return BadRequest(pet.user_id);
             }
-            catch
-            {
-                return View();
-            }
+            else return BadRequest(pet.animal);
         }
 
-        // GET: RegisterController/Edit/5
-        public ActionResult Edit(int id)
+        private bool ApproveId(int id, string kind)
         {
-            return View();
-        }
-
-        // POST: RegisterController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
+            bool res = false;
+            if (id > 0)
             {
-                return RedirectToAction(nameof(Index));
+                switch (kind)
+                {
+                    case "user":
+                        res = context.Users.Any(u => u.UserId == id);
+                        break;
+                    case "pet":
+                        res = context.Pets.Any(p => p.PetId == id);
+                        break;
+                    case "illness":
+                        res = context.Illnesses.Any(i => i.IllnessId == id);
+                        break;
+                    case "note":
+                        res = context.Notes.Any(n => n.NoteId == id);
+                        break;
+                    case "overexposure":
+                        res = context.Overexposures.Any(o => o.OverexposureId == id);
+                        break;
+                    case "mention":
+                        res = context.Mentions.Any(m => m.MentionId == id);
+                        break;
+                    default:
+                        break;
+                }
             }
-            catch
-            {
-                return View();
-            }
+            return res;
         }
-
-        // GET: RegisterController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: RegisterController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-        */
     }
 }
