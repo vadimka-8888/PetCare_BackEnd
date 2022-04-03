@@ -53,4 +53,10 @@ namespace PetCareBackEnd.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Pet> Pets { get; set; }
     }
+
+    public class EmailPassword
+    {
+        public string email { get; set; }
+        public string password { get; set; }
+    }
 }

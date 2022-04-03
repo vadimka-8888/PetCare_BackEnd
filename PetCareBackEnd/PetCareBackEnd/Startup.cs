@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,7 @@ namespace PetCareBackEnd
             services.AddDbContext<PetCareBackEnd.Models.PetCareEntities>(options =>
                 options.UseSqlServer(connection));
             services.AddControllersWithViews();
+            services.AddControllers();
             services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 
@@ -54,9 +56,10 @@ namespace PetCareBackEnd
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllers();
                 endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action}/{id?}");
+                   name: "default",
+                   pattern: "{controller}/{action}/{id?}");
             });
         }
     }
