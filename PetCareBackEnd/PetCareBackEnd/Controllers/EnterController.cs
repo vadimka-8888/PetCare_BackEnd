@@ -10,8 +10,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PetCareBackEnd.Controllers
 {
-    //[ApiController]
-    //[Route("ent/[controller]")]
     public class EnterController : Controller
     {
         private PetCareEntities context;

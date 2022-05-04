@@ -16,5 +16,8 @@ namespace PetCareBackEnd.Models
 
         [Required]
         public string TextOfArticle { get; set; }
+
+        [Column(TypeName = "image")]
+        public byte[] Image { get; set; }
     }
 }

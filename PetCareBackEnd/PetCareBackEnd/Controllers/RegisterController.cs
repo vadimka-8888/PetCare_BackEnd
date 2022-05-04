@@ -11,9 +11,7 @@ using PetCareBackEnd.DataForPost;
 
 namespace PetCareBackEnd.Controllers
 {
-    //Content-Type: application/json
-    //Conten-Encoding: charset=utf-8
-    public class RegisterController : Controller//Base
+    public class RegisterController : Controller
     {
         private PetCareEntities context;
         public RegisterController(PetCareEntities db)
@@ -27,7 +25,7 @@ namespace PetCareBackEnd.Controllers
             var users = context.Users.Where(u => u.Email == ep.email).Select(u => new { Email = u.Email });
             if (users.Count() == 0)
             {
-                var user = new User
+                var user0 = new User
                 {
                     FirstName = ep.fname,
                     LastName = ep.lname,
@@ -36,11 +34,11 @@ namespace PetCareBackEnd.Controllers
                     District = ep.district,
                     ReadyForOvereposure = ep.confirmation
                 };
-                context.Users.Add(user);
+                context.Users.Add(user0);
                 await context.SaveChangesAsync();
-                return Ok(user);//Json($"Successful, user_id = {user.UserId}");
+                return Json($"Successful, user_id = {user0.UserId}");
             }
-            else return BadRequest();//Json("Not successful");
+            else return Json("Not successful");
         }
 
         [HttpPost]
@@ -65,11 +63,131 @@ namespace PetCareBackEnd.Controllers
                     };
                     context.Pets.Add(pet0);
                     await context.SaveChangesAsync();
-                    return Ok(pet0);
+                    return Json($"Successful, pet_id = {pet0.PetId}"); 
                 }
-                else return BadRequest(pet.user_id);
+                else return Json("Not successful");
             }
-            else return BadRequest(pet.animal);
+            else return Json("Not successful");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RegisterNote([FromBody] NotePost note)
+        {
+            if (ApproveId(note.user_id, "user"))
+            {
+                var notes = context.Notes.Where(n => n.TextOfNote == note.text && n.Date == note.date).Select(n => new { TextOfNote = n.TextOfNote });
+                if (notes.Count() == 0)
+                {
+                    var note0 = new Note
+                    {
+                        UserId = note.user_id,
+                        TextOfNote = note.text,
+                        Date = note.date
+                    };
+                    context.Notes.Add(note0);
+                    await context.SaveChangesAsync();
+                    return Json($"Successful, note_id = {note0.NoteId}");
+                }
+                else return Json("Not successful");
+            }
+            else return Json("Not successful");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RegisterMention([FromBody] MentionPost mention)
+        {
+            if (ApproveId(mention.user_id, "user"))
+            {
+                var mentions = context.Mentions.Where(m => m.TextOfMention == mention.text && m.Date == mention.date && m.Time == mention.time).Select(m => new { TextOfMention = m.TextOfMention });
+                if (mentions.Count() == 0)
+                {
+                    var mention0 = new Mention
+                    {
+                        UserId = mention.user_id,
+                        TextOfMention = mention.text,
+                        Date = mention.date,
+                        Time = mention.time
+                    };
+                    context.Mentions.Add(mention0);
+                    await context.SaveChangesAsync();
+                    return Json($"Successful, mention_id = {mention0.MentionId}");
+                }
+                else return Json("Not successful");
+            }
+            else return Json("Not successful");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RegisterOverexposure([FromBody] OverexposurePost overexposure)
+        {
+            if (ApproveId(overexposure.user_id, "user"))
+            {
+                var overexposures = context.Overexposures.Where(o => o.Animal == overexposure.animal && o.Cost == overexposure.cost && o.ONote == overexposure.overexposure_note).Select(o => new { Animal = o.Animal });
+                if (overexposures.Count() == 0)
+                {
+                    var overexposure0 = new Overexposure
+                    {
+                        UserId = overexposure.user_id,
+                        Animal = overexposure.animal,
+                        ONote = overexposure.overexposure_note,
+                        Cost = overexposure.cost
+                    };
+                    context.Overexposures.Add(overexposure0);
+                    await context.SaveChangesAsync();
+                    return Json($"Successful, overexposure_id = {overexposure0.OverexposureId}");
+                }
+                else return Json("Not successful");
+            }
+            else return Json("Not successful");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RegisterIllness([FromBody] IllnessPost illness)
+        {
+            if (ApproveId(illness.pet_id, "pet"))
+            {
+                var illnesses = context.Illnesses.Where(i => i.Type == illness.type && i.DateOfBegining == illness.date_of_begining && i.DateOfEnding == illness.date_of_ending).Select(i => new { Type = i.Type });
+                if (illnesses.Count() == 0)
+                {
+                    var illness0 = new Illness
+                    {
+                        PetId = illness.pet_id,
+                        Type = illness.type,
+                        DateOfBegining = illness.date_of_begining,
+                        DateOfEnding = illness.date_of_ending
+                    };
+                    context.Illnesses.Add(illness0);
+                    await context.SaveChangesAsync();
+                    return Json($"Successful, illness_id = {illness0.IllnessId}");
+                }
+                else return Json("Not successful");
+            }
+            else return Json("Not successful");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RegisterVaccination([FromBody] VaccinationPost vaccination)
+        {
+            if (ApproveId(vaccination.pet_id, "pet"))
+            {
+                var vaccinations = context.Vaccinations.Where(v => v.Type == vaccination.type && v.Date == vaccination.date).Select(v => new { Type = v.Type });
+                if (vaccinations.Count() == 0)
+                {
+                    var vaccination0 = new Vaccination
+                    {
+                        PetId = vaccination.pet_id,
+                        Type = vaccination.type,
+                        Date = vaccination.date,
+                        OfficialDocument = vaccination.document,
+                        NecessityOfRevaccination = vaccination.necessety_of_revaccination
+                    };
+                    context.Vaccinations.Add(vaccination0);
+                    await context.SaveChangesAsync();
+                    return Json($"Successful, vaccination_id = {vaccination0.VaccinationId}");
+                }
+                else return Json("Not successful");
+            }
+            else return Json("Not successful");
         }
 
         private bool ApproveId(int id, string kind)
