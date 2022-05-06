@@ -31,7 +31,7 @@ namespace PetCareBackEnd.Controllers
             }
             if (user != null)
                 return Json(user);
-            else return Json("");
+            else return Json("Not Successful");
         }
     }
 }

@@ -19,5 +19,8 @@ namespace PetCareBackEnd.Models
 
         [Column(TypeName = "image")]
         public byte[] Image { get; set; }
+
+        public bool IsFavourite { get; set; }
+
     }
 }
