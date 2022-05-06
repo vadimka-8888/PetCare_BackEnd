@@ -1,12 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using PetCareBackEnd.Models;
-using Newtonsoft.Json;
 using PetCareBackEnd.DataForPost;
 
 namespace PetCareBackEnd.Controllers

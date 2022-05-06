@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using PetCareBackEnd.DataForPost;
 using PetCareBackEnd.Models;
 using PetCareBackEnd.AuxiliaryClasses;
 
@@ -49,6 +47,8 @@ namespace PetCareBackEnd.Controllers
         [HttpGet]
         public IActionResult UpdateOverexposureDataList(int user_id, [FromBody] FiltrationSettings f_settings)
         {
+            if (f_settings == null)
+                return Json("Not successful");
             List<Overexposure> Offers = new List<Overexposure>();
             Dictionary<string, bool> possible_animals = new Dictionary<string, bool> { { "Кот/Кошка", false }, { "Собака", false }, { "Попугай", false }, { "Рыба", false }, { "Хомяк", false }, { "Морская свинка", false } };
             if (ApproveId(user_id, "user"))
