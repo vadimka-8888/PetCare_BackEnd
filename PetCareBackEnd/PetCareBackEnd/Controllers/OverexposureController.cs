@@ -44,7 +44,7 @@ namespace PetCareBackEnd.Controllers
             else return Json("Not successful");
         }
 
-        [HttpGet]
+        [HttpPost]
         public IActionResult UpdateOverexposureDataList(int user_id, [FromBody] FiltrationSettings f_settings)
         {
             if (f_settings == null)
