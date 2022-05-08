@@ -25,7 +25,7 @@ namespace PetCareBackEnd.Controllers
                 var result = context.Notes.Where(n => n.User == user).Select(n => new { n.NoteId, n.TextOfNote, n.Date }).ToList();
                 return Json(result);
             }
-            else return Json("Not successful");
+            else return Json("Not successful, id does not exist");
         }
 
         [HttpGet]
@@ -37,7 +37,7 @@ namespace PetCareBackEnd.Controllers
                 var result = context.Mentions.Where(m => m.User == user).Select(m => new { m.MentionId, m.TextOfMention, m.Date, m.Time }).ToList();
                 return Json(result);
             }
-            else return Json("Not successful");
+            else return Json("Not successful, id does not exist");
         }
 
         [HttpGet]
@@ -49,7 +49,7 @@ namespace PetCareBackEnd.Controllers
                 var result = context.Illnesses.Where(i => i.Pet == pet).Select(i => new { i.IllnessId, i.Type, i.DateOfBegining, i.DateOfEnding }).ToList();
                 return Json(result);
             }
-            else return Json("Not successful");
+            else return Json("Not successful, id does not exist";
         }
 
         [HttpGet]
@@ -61,7 +61,7 @@ namespace PetCareBackEnd.Controllers
                 var result = context.Vaccinations.Where(v => v.Pet == pet).Select(v => new { v.VaccinationId, v.Type, v.Date, v.OfficialDocument, v.NecessityOfRevaccination }).ToList();
                 return Json(result);
             }
-            else return Json("Not successful");
+            else return Json("Not successful, id does not exist");
         }
 
         [HttpGet]
@@ -73,7 +73,7 @@ namespace PetCareBackEnd.Controllers
                 int pet_id = pets.Count() > 0 ? pets.First().PetId : 0;
                 return LoadIllnesses(pet_id);
             }
-            else return Json("Not successful");
+            else return Json("Not successful, id does not exist");
         }
 
         [HttpGet]
@@ -85,7 +85,7 @@ namespace PetCareBackEnd.Controllers
                 int pet_id = pets.Count() > 0 ? pets.First().PetId : 0;
                 return LoadVaccinations(pet_id);
             }
-            else return Json("Not successful");
+            else return Json("Not successful, id does not exist");
         }
 
         [HttpGet]
@@ -103,7 +103,7 @@ namespace PetCareBackEnd.Controllers
                 var result = result0.Select(i => new { i.IllnessId, i.Type, i.DateOfBegining, i.DateOfEnding }).ToList();
                 return Json(result);
             }
-            else return Json("Not successful");
+            else return Json("Not successful, id does not exist");
         }
 
         [HttpGet]
@@ -121,7 +121,7 @@ namespace PetCareBackEnd.Controllers
                 var result = result0.Select(v => new { v.VaccinationId, v.Type, v.Date, v.OfficialDocument, v.NecessityOfRevaccination }).ToList();
                 return Json(result);
             }
-            else return Json("Not successful");
+            else return Json("Not successful, id does not exist");
         }
 
         private bool ApproveId(int id, string kind)

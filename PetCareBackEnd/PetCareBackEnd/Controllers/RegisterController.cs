@@ -35,7 +35,7 @@ namespace PetCareBackEnd.Controllers
                     await context.SaveChangesAsync();
                     return Json($"Successful, user_id = {user0.UserId}");
                 }
-                else return Json("Not successful");
+                else return Json("Not successful, such user already exists");
             }
             else return Json("Not successful: possibly json is incorrect");
         }
@@ -66,9 +66,9 @@ namespace PetCareBackEnd.Controllers
                         await context.SaveChangesAsync();
                         return Json($"Successful, pet_id = {pet0.PetId}");
                     }
-                    else return Json("Not successful");
+                    else return Json("Not successful, such pet already exists");
                 }
-                else return Json("Not successful");
+                else return Json("Not successful, id does not exist");
             }
             else return Json("Not successful: possibly json is incorrect");
         }
@@ -93,9 +93,9 @@ namespace PetCareBackEnd.Controllers
                         await context.SaveChangesAsync();
                         return Json($"Successful, note_id = {note0.NoteId}");
                     }
-                    else return Json("Not successful");
+                    else return Json("Not successful, such note already exists");
                 }
-                else return Json("Not successful");
+                else return Json("Not successful, id does not exist");
             }
             else return Json("Not successful: possibly json is incorrect");
         }
@@ -121,9 +121,9 @@ namespace PetCareBackEnd.Controllers
                         await context.SaveChangesAsync();
                         return Json($"Successful, mention_id = {mention0.MentionId}");
                     }
-                    else return Json("Not successful");
+                    else return Json("Not successful, such mention already exists");
                 }
-                else return Json("Not successful");
+                else return Json("Not successful, id does not exist");
             }
             else return Json("Not successful: possibly json is incorrect");
         }
@@ -149,9 +149,9 @@ namespace PetCareBackEnd.Controllers
                         await context.SaveChangesAsync();
                         return Json($"Successful, overexposure_id = {overexposure0.OverexposureId}");
                     }
-                    else return Json("Not successful");
+                    else return Json("Not successful, such overexposure already exists");
                 }
-                else return Json("Not successful");
+                else return Json("Not successful, id does not exist");
             }
             else return Json("Not successful: possibly json is incorrect");
         }
@@ -177,9 +177,9 @@ namespace PetCareBackEnd.Controllers
                         await context.SaveChangesAsync();
                         return Json($"Successful, illness_id = {illness0.IllnessId}");
                     }
-                    else return Json("Not successful");
+                    else return Json("Not successful, such illness already exists");
                 }
-                else return Json("Not successful");
+                else return Json("Not successful, id does not exist");
             }
             else return Json("Not successful: possibly json is incorrect");
         }
@@ -206,9 +206,9 @@ namespace PetCareBackEnd.Controllers
                         await context.SaveChangesAsync();
                         return Json($"Successful, vaccination_id = {vaccination0.VaccinationId}");
                     }
-                    else return Json("Not successful");
+                    else return Json("Not successful, such vaccination already exists");
                 }
-                else return Json("Not successful");
+                else return Json("Not successful, id does not exist");
             }
             else return Json("Not successful: possibly json is incorrect");
         }

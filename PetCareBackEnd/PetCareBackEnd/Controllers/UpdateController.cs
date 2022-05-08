@@ -30,7 +30,7 @@ namespace PetCareBackEnd.Controllers
                             await context.SaveChangesAsync();
                             return Json($"Successful");
                         }
-                        else return Json("Not successful");
+                        else return Json("Not successful, id does not exist");
                     case "district":
                         if (ApproveId(ep.id, "user"))
                         {
@@ -39,7 +39,7 @@ namespace PetCareBackEnd.Controllers
                             await context.SaveChangesAsync();
                             return Json($"Successful");
                         }
-                        else return Json("Not successful");
+                        else return Json("Not successful, id does not exist");
                     case "name":
                         if (ApproveId(ep.id, "user"))
                         {
@@ -48,7 +48,7 @@ namespace PetCareBackEnd.Controllers
                             await context.SaveChangesAsync();
                             return Json($"Successful");
                         }
-                        else return Json("Not successful");
+                        else return Json("Not successful, id does not exist");
                     case "lastname":
                         if (ApproveId(ep.id, "user"))
                         {
@@ -57,7 +57,7 @@ namespace PetCareBackEnd.Controllers
                             await context.SaveChangesAsync();
                             return Json($"Successful");
                         }
-                        else return Json("Not successful");
+                        else return Json("Not successful, id does not exist");
                     case "pet_name":
                         if (ApproveId(ep.id, "pet"))
                         {
@@ -66,7 +66,7 @@ namespace PetCareBackEnd.Controllers
                             await context.SaveChangesAsync();
                             return Json($"Successful");
                         }
-                        else return Json("Not successful");
+                        else return Json("Not successful, id does not exist");
                     case "weight":
                         if (ApproveId(ep.id, "pet"))
                         {
@@ -75,7 +75,7 @@ namespace PetCareBackEnd.Controllers
                             await context.SaveChangesAsync();
                             return Json($"Successful");
                         }
-                        else return Json("Not successful");
+                        else return Json("Not successful, id does not exist");
                     case "pet_photo":
                         if (ApproveId(ep.id, "pet"))
                         {
@@ -84,7 +84,7 @@ namespace PetCareBackEnd.Controllers
                             await context.SaveChangesAsync();
                             return Json($"Successful");
                         }
-                        else return Json("Not successful");
+                        else return Json("Not successful, id does not exist");
                     case "overexposure_note":
                         if (ApproveId(ep.id, "overexposure"))
                         {
@@ -93,7 +93,7 @@ namespace PetCareBackEnd.Controllers
                             await context.SaveChangesAsync();
                             return Json($"Successful");
                         }
-                        else return Json("Not successful");
+                        else return Json("Not successful, id does not exist");
                     case "overexposure_cost":
                         if (ApproveId(ep.id, "overexposure"))
                         {
@@ -102,7 +102,7 @@ namespace PetCareBackEnd.Controllers
                             await context.SaveChangesAsync();
                             return Json($"Successful");
                         }
-                        else return Json("Not successful");
+                        else return Json("Not successful, id does not exist");
                     case "state":
                         if (ApproveId(ep.id, "user"))
                         {
@@ -111,7 +111,7 @@ namespace PetCareBackEnd.Controllers
                             await context.SaveChangesAsync();
                             return Json($"Successful");
                         }
-                        else return Json("Not successful");
+                        else return Json("Not successful, id does not exist");
                     case "note":
                         if (ApproveId(ep.id, "note"))
                         {
@@ -121,12 +121,21 @@ namespace PetCareBackEnd.Controllers
                             await context.SaveChangesAsync();
                             return Json($"Successful");
                         }
-                        else return Json("Not successful");
+                        else return Json("Not successful, id does not exist");
+                    case "favourite":
+                        if (ApproveId(ep.id, "article"))
+                        {
+                            Article article = context.Articles.Find(ep.id);
+                            article.IsFavourite = (bool)ep.new_value;
+                            await context.SaveChangesAsync();
+                            return Json($"Successful");
+                        }
+                        else return Json("Not successful, id does not exist");
                     default:
-                        return Json("Not successful");
+                        return Json("Not successful, incorrect aim of changing");
                 }
             }
-            else return Json("Not successful");
+            else return Json("Not successful, possibly json-object is incorrect");
         }
 
         private bool ApproveId(int id, string kind)
@@ -153,6 +162,9 @@ namespace PetCareBackEnd.Controllers
                         break;
                     case "mention":
                         res = context.Mentions.Any(m => m.MentionId == id);
+                        break;
+                    case "article":
+                        res = context.Articles.Any(a => a.ArticleId == id);
                         break;
                     default:
                         break;
