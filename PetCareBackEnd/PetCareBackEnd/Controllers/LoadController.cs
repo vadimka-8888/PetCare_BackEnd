@@ -49,7 +49,7 @@ namespace PetCareBackEnd.Controllers
                 var result = context.Illnesses.Where(i => i.Pet == pet).Select(i => new { i.IllnessId, i.Type, i.DateOfBegining, i.DateOfEnding }).ToList();
                 return Json(result);
             }
-            else return Json("Not successful, id does not exist";
+            else return Json("Not successful, id does not exist");
         }
 
         [HttpGet]
@@ -93,11 +93,11 @@ namespace PetCareBackEnd.Controllers
         {
             if (ApproveId(user_id, "user"))
             {
-                var pets = context.Pets.Where(p => p.UserId == user_id);
+                List<Pet> pets = context.Pets.Where(p => p.UserId == user_id).Include(p => p.Illnesses).ToList();
                 List<Illness> result0 = new List<Illness>();
                 foreach (Pet p in pets)
                 {
-                    List<Illness> ilnesses_for_certain_pet = context.Illnesses.Where(i => i.Pet == p).ToList();
+                    List<Illness> ilnesses_for_certain_pet = p.Illnesses.ToList();
                     result0.AddRange(ilnesses_for_certain_pet);
                 }
                 var result = result0.Select(i => new { i.IllnessId, i.Type, i.DateOfBegining, i.DateOfEnding }).ToList();
@@ -111,11 +111,11 @@ namespace PetCareBackEnd.Controllers
         {
             if (ApproveId(user_id, "user"))
             {
-                var pets = context.Pets.Where(p => p.UserId == user_id);
+                List<Pet> pets = context.Pets.Where(p => p.UserId == user_id).Include(p => p.Vaccinations).ToList();
                 List<Vaccination> result0 = new List<Vaccination>();
                 foreach (Pet p in pets)
                 {
-                    List<Vaccination> vaccinations_for_certain_pet = context.Vaccinations.Where(i => i.Pet == p).ToList();
+                    List<Vaccination> vaccinations_for_certain_pet = p.Vaccinations.ToList();
                     result0.AddRange(vaccinations_for_certain_pet);
                 }
                 var result = result0.Select(v => new { v.VaccinationId, v.Type, v.Date, v.OfficialDocument, v.NecessityOfRevaccination }).ToList();
