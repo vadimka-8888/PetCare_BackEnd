@@ -103,6 +103,9 @@ namespace PetCareBackEnd.Controllers
                     case "mention":
                         res = context.Mentions.Any(m => m.MentionId == id);
                         break;
+                    case "vaccination":
+                        res = context.Vaccinations.Any(v => v.VaccinationId == id);
+                        break;
                     default:
                         break;
                 }
