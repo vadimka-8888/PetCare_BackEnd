@@ -124,6 +124,21 @@ namespace PetCareBackEnd.Controllers
             else return Json("Not successful, id does not exist");
         }
 
+        [HttpGet]
+        public IActionResult LoadPets(int user_id)
+        {
+            if (ApproveId(user_id, "user"))
+            {
+                var pets = context.Pets.Where(p => p.UserId == user_id).Select(p => new { p.PetId, p.Animal, p.Name, p.Gender, p.Breed, p.DateOfBirth, p.Weight, p.Color, p.Photo });
+                if (pets.Count() > 0)
+                {
+                    return Json(pets);
+                }
+                else return Json("Not successful, there are no pets");
+            }
+            else return Json("Not successful, id does not exist");
+        }
+
         private bool ApproveId(int id, string kind)
         {
             bool res = false;
