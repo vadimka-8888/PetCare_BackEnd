@@ -24,9 +24,9 @@ namespace PetCareBackEnd.AuxiliaryClasses
 
     public class InformationWithFilter
     {
-        public List<Overexposure> offers;
+        public List<FullOverexposure> offers;
         public FiltrationSettings settings;
-        public InformationWithFilter(List<Overexposure> o, FiltrationSettings s)
+        public InformationWithFilter(List<FullOverexposure> o, FiltrationSettings s)
         {
             offers = o;
             settings = s;

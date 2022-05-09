@@ -19,7 +19,7 @@ namespace PetCareBackEnd.Controllers
         [HttpGet]
         public IActionResult LoadOverexposureDataList(int user_id)
         {
-            List<Overexposure> Offers = new List<Overexposure>();
+            List<FullOverexposure> Offers = new List<FullOverexposure>();
             FiltrationSettings f_settings = new FiltrationSettings();
             Dictionary<string, bool> possible_animals = new Dictionary<string, bool> { { "Кот/Кошка", false }, { "Собака", false }, { "Попугай", false }, { "Рыба", false }, { "Хомяк", false }, { "Морская свинка", false } };
             if (ApproveId(user_id, "user"))
@@ -34,7 +34,7 @@ namespace PetCareBackEnd.Controllers
                         var PeopleOffer = context.Users.Where(x => x.ReadyForOvereposure == true && x.UserId != user_id).Select(x => new { x.UserId, x.District }).AsEnumerable().Select(c => new Tuple<int, string>(c.UserId, c.District)).ToList();
                         foreach (Tuple<int, string> id_district in PeopleOffer)
                         {
-                            var Offers_of_certain_person = context.Overexposures.Where(x => x.UserId == id_district.Item1 && x.Animal == pet.Animal).Include(x => new { x.User.FirstName, x.User.Email, x.User.District });
+                            var Offers_of_certain_person = context.Overexposures.Where(x => x.UserId == id_district.Item1 && x.Animal == pet.Animal).Include(x => x.User).Select(x => new FullOverexposure(x.OverexposureId, x.UserId, x.Animal, x.ONote, x.Cost, x.User.FirstName, x.User.LastName, x.User.District, x.User.Email));
                             f_settings.accessible_districts[id_district.Item2] = true;
                             Offers.AddRange(Offers_of_certain_person);
                         }
@@ -51,7 +51,7 @@ namespace PetCareBackEnd.Controllers
         {
             if (f_settings == null)
                 return Json("Not successful, settings were sent incorrectly");
-            List<Overexposure> Offers = new List<Overexposure>();
+            List<FullOverexposure> Offers = new List<FullOverexposure>();
             Dictionary<string, bool> possible_animals = new Dictionary<string, bool> { { "Кот/Кошка", false }, { "Собака", false }, { "Попугай", false }, { "Рыба", false }, { "Хомяк", false }, { "Морская свинка", false } };
             if (ApproveId(user_id, "user"))
             {
@@ -64,7 +64,7 @@ namespace PetCareBackEnd.Controllers
                         var PeopleOffer = context.Users.Where(x => x.ReadyForOvereposure == true && x.UserId != user_id && f_settings.accessible_districts[x.District] == true).Select(x => x.UserId).ToList();
                         foreach (int id in PeopleOffer)
                         {
-                            var Offers_of_certain_person = context.Overexposures.Where(x => x.UserId == id && x.Animal == pet.Animal && x.Cost >= f_settings.min_cost && x.Cost <= f_settings.max_cost).Include(x => new { x.User.FirstName, x.User.Email, x.User.District });
+                            var Offers_of_certain_person = context.Overexposures.Where(x => x.UserId == id && x.Animal == pet.Animal && x.Cost >= f_settings.min_cost && x.Cost <= f_settings.max_cost).Include(x => x.User).Select(x => new FullOverexposure(x.OverexposureId, x.UserId, x.Animal, x.ONote, x.Cost, x.User.FirstName, x.User.LastName, x.User.District, x.User.Email));
                             Offers.AddRange(Offers_of_certain_person);
                         }
                     }
