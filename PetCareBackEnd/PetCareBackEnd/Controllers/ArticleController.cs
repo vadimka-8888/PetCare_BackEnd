@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using PetCareBackEnd.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace PetCareBackEnd.Controllers
 {
@@ -20,14 +21,14 @@ namespace PetCareBackEnd.Controllers
             Dictionary<string, bool> possible_animals = new Dictionary<string, bool> { { "Кот/Кошка", false }, { "Собака", false }, { "Попугай", false }, { "Рыба", false }, { "Хомяк", false }, { "Морская свинка", false } };
             if (ApproveId(user_id, "user"))
             {
-                User user = context.Users.Find(user_id);
+                User user = context.Users.Include(u => u.Pets).Where(u => u.UserId == user_id).First();
                 foreach (Pet pet in user.Pets)
                 {
                     if (possible_animals[pet.Animal] == false)
                     {
                         possible_animals[pet.Animal] = true;
 
-                        var articles = context.Articles.Where(a => a.Animal == pet.Animal || a.Animal == "Любое" || ((pet.Animal == "Кот/Кошка" || pet.Animal == "Собака") && a.Animal.Contains('-')));
+                        var articles = context.Articles.Where(a => a.Animal == pet.Animal || a.Animal == "Любое" || ((pet.Animal == "Кот/Кошка" || pet.Animal == "Собака") && a.Animal == "Кошка-Собака"));
                         NecessaryArticles.AddRange(articles);
                     }
                 }
