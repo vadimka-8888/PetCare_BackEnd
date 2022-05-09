@@ -32,7 +32,7 @@ namespace PetCareBackEnd.Controllers
                 }
                 return Json(NecessaryArticles);
             }
-            else return Json("Not successful");
+            else return Json("Not successful, id does not exist");
         }
 
         private bool ApproveId(int id, string kind)
