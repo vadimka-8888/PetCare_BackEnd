@@ -22,5 +22,7 @@ namespace PetCareBackEnd.Models
 
         public bool IsFavourite { get; set; }
 
+        [StringLength(100)]
+        public string Title { get; set; }
     }
 }

@@ -26,7 +26,8 @@ namespace PetCareBackEnd.Controllers
                     if (possible_animals[pet.Animal] == false)
                     {
                         possible_animals[pet.Animal] = true;
-                        var articles = context.Articles.Where(a => a.Animal == pet.Animal);
+
+                        var articles = context.Articles.Where(a => a.Animal == pet.Animal || a.Animal == "Любое" || ((pet.Animal == "Кот/Кошка" || pet.Animal == "Собака") && a.Animal.Contains('-')));
                         NecessaryArticles.AddRange(articles);
                     }
                 }
