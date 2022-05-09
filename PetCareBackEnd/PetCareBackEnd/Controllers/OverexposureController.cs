@@ -34,7 +34,7 @@ namespace PetCareBackEnd.Controllers
                         var PeopleOffer = context.Users.Where(x => x.ReadyForOvereposure == true && x.UserId != user_id).Select(x => new { x.UserId, x.District }).AsEnumerable().Select(c => new Tuple<int, string>(c.UserId, c.District)).ToList();
                         foreach (Tuple<int, string> id_district in PeopleOffer)
                         {
-                            var Offers_of_certain_person = context.Overexposures.Where(x => x.UserId == id_district.Item1 && x.Animal == pet.Animal);
+                            var Offers_of_certain_person = context.Overexposures.Where(x => x.UserId == id_district.Item1 && x.Animal == pet.Animal).Include(x => new { x.User.FirstName, x.User.Email, x.User.District });
                             f_settings.accessible_districts[id_district.Item2] = true;
                             Offers.AddRange(Offers_of_certain_person);
                         }
@@ -64,7 +64,7 @@ namespace PetCareBackEnd.Controllers
                         var PeopleOffer = context.Users.Where(x => x.ReadyForOvereposure == true && x.UserId != user_id && f_settings.accessible_districts[x.District] == true).Select(x => x.UserId).ToList();
                         foreach (int id in PeopleOffer)
                         {
-                            var Offers_of_certain_person = context.Overexposures.Where(x => x.UserId == id && x.Animal == pet.Animal && x.Cost >= f_settings.min_cost && x.Cost <= f_settings.max_cost);
+                            var Offers_of_certain_person = context.Overexposures.Where(x => x.UserId == id && x.Animal == pet.Animal && x.Cost >= f_settings.min_cost && x.Cost <= f_settings.max_cost).Include(x => new { x.User.FirstName, x.User.Email, x.User.District });
                             Offers.AddRange(Offers_of_certain_person);
                         }
                     }

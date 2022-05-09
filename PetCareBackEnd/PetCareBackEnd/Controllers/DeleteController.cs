@@ -78,6 +78,32 @@ namespace PetCareBackEnd.Controllers
             else return Json("Not successful");
         }
 
+        [HttpDelete]
+        public async Task<IActionResult> DeleteFavouriteId(int favourite_id)
+        {
+            if (ApproveId(favourite_id, "favourite"))
+            {
+                Favourite favourite = context.Favourites.Find(favourite_id);
+                context.Favourites.Remove(favourite);
+                await context.SaveChangesAsync();
+                return Json($"Successful");
+            }
+            else return Json("Not successful");
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteFavourite(int user_id, int article_id)
+        {
+            if (ApproveIdsInTable(user_id, article_id, "favourites"))
+            {
+                Favourite favourite = context.Favourites.Where(f => f.UserId == user_id && f.ArticleId == article_id).First();
+                context.Favourites.Remove(favourite);
+                await context.SaveChangesAsync();
+                return Json($"Successful");
+            }
+            else return Json("Not successful");
+        }
+
         private bool ApproveId(int id, string kind)
         {
             bool res = false;
@@ -105,6 +131,26 @@ namespace PetCareBackEnd.Controllers
                         break;
                     case "vaccination":
                         res = context.Vaccinations.Any(v => v.VaccinationId == id);
+                        break;
+                    case "article":
+                        res = context.Articles.Any(m => m.ArticleId == id);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return res;
+        }
+
+        private bool ApproveIdsInTable(int id1, int id2, string where)
+        {
+            bool res = false;
+            if (id1 > 0 && id2 > 0)
+            {
+                switch (where)
+                {
+                    case "favourites":
+                        res = context.Favourites.Any(f => f.UserId == id1 && f.ArticleId == id2);
                         break;
                     default:
                         break;

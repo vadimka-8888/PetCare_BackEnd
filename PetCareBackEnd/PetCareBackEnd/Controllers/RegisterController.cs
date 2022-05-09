@@ -213,6 +213,32 @@ namespace PetCareBackEnd.Controllers
             else return Json("Not successful: possibly json is incorrect");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> RegisterVFavourite([FromBody] FavouritePost favourite)
+        {
+            if (favourite != null)
+            {
+                if (ApproveId(favourite.user_id, "user") && ApproveId(favourite.article_id, "article"))
+                {
+                    var favourites = context.Favourites.Where(f => f.UserId == favourite.user_id && f.ArticleId == favourite.article_id);
+                    if (favourites.Count() == 0)
+                    {
+                        var favourite0 = new Favourite
+                        {
+                            UserId = favourite.user_id,
+                            ArticleId = favourite.article_id
+                        };
+                        context.Favourites.Add(favourite0);
+                        await context.SaveChangesAsync();
+                        return Json($"Successful, favourite_id = {favourite0.FavouriteId}");
+                    }
+                    else return Json("Not successful, such favourite already exists");
+                }
+                else return Json("Not successful, id does not exist");
+            }
+            else return Json("Not successful: possibly json is incorrect");
+        }
+
         private bool ApproveId(int id, string kind)
         {
             bool res = false;
@@ -237,6 +263,9 @@ namespace PetCareBackEnd.Controllers
                         break;
                     case "mention":
                         res = context.Mentions.Any(m => m.MentionId == id);
+                        break;
+                    case "article":
+                        res = context.Articles.Any(m => m.ArticleId == id);
                         break;
                     default:
                         break;

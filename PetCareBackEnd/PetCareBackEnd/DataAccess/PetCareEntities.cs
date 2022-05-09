@@ -17,6 +17,7 @@ namespace PetCareBackEnd.Models
         public virtual DbSet<Pet> Pets { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Vaccination> Vaccinations { get; set; }
+        public virtual DbSet<Favourite> Favourites { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
