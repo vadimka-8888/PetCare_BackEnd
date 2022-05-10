@@ -37,6 +37,16 @@ namespace PetCareBackEnd.Controllers
             else return Json("Not successful, id does not exist");
         }
 
+        [HttpGet]
+        public IActionResult IsArticleFavourite(int user_id, int article_id)
+        {
+            if (ApproveIdsInTable(user_id, article_id, "favourites"))
+            {
+                return Json(true);
+            }
+            else return Json(false);
+        }
+
         private bool ApproveId(int id, string kind)
         {
             bool res = false;
@@ -46,6 +56,23 @@ namespace PetCareBackEnd.Controllers
                 {
                     case "user":
                         res = context.Users.Any(u => u.UserId == id);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return res;
+        }
+
+        private bool ApproveIdsInTable(int id1, int id2, string where)
+        {
+            bool res = false;
+            if (id1 > 0 && id2 > 0)
+            {
+                switch (where)
+                {
+                    case "favourites":
+                        res = context.Favourites.Any(f => f.UserId == id1 && f.ArticleId == id2);
                         break;
                     default:
                         break;

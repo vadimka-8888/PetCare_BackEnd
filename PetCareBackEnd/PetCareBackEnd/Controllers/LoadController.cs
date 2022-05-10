@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PetCareBackEnd.Models;
 using Microsoft.EntityFrameworkCore;
+using PetCareBackEnd.AuxiliaryClasses;
 
 namespace PetCareBackEnd.Controllers
 {
@@ -120,6 +121,34 @@ namespace PetCareBackEnd.Controllers
                 }
                 var result = result0.Select(v => new { v.VaccinationId, v.Type, v.Date, v.OfficialDocument, v.NecessityOfRevaccination }).ToList();
                 return Json(result);
+            }
+            else return Json("Not successful, id does not exist");
+        }
+
+        [HttpGet]
+        public IActionResult LoadFavouriteArticles(int user_id)
+        {
+            if (ApproveId(user_id, "user"))
+            {
+                List<Favourite> favourites = context.Favourites.Where(f => f.UserId == user_id).ToList();
+                List<OnlyArticle> result = new List<OnlyArticle>();
+                foreach (Favourite f in favourites)
+                {
+                    OnlyArticle a = context.Articles.Where(a => a.ArticleId == f.ArticleId).Select(a => new OnlyArticle(a.ArticleId, a.Animal, a.Image, a.ImageAdress, a.IsFavourite, a.TextOfArticle, a.Title)).First();
+                    result.Add(a);
+                }
+                return Json(result);
+            }
+            else return Json("Not successful, id does not exist");
+        }
+
+        [HttpGet]
+        public IActionResult LoadOverexposures(int user_id)
+        {
+            if (ApproveId(user_id, "user"))
+            {
+                var overexposures = context.Overexposures.Where(o => o.UserId == user_id).Select(o => new { o.OverexposureId, o.Animal, o.ONote, o.Cost });
+                return Json(overexposures);
             }
             else return Json("Not successful, id does not exist");
         }

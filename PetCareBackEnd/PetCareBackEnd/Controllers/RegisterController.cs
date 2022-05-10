@@ -214,7 +214,7 @@ namespace PetCareBackEnd.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> RegisterVFavourite([FromBody] FavouritePost favourite)
+        public async Task<IActionResult> RegisterFavourite([FromBody] FavouritePost favourite)
         {
             if (favourite != null)
             {
